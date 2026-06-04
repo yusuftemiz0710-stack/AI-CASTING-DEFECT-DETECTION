@@ -1,0 +1,35 @@
+project_name: "Yapay Zekâ ile Döküm Hatası Tahmin Sistemi"
+seed: 42
+image_size: 224
+batch_size: 32
+epochs_cnn: 15
+epochs_transfer: 10
+learning_rate: 0.001
+train_val_test_split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+class_names:
+  - def_front
+  - ok_front
+defect_positive_class: def_front
+model_selection_metric: f1_defect
+selection_tolerance: 0.03
+prefer_transfer_if_within_tolerance: true
+early_stopping_patience: 4
+use_gpu_if_available: true
+num_workers: 0
+threshold: 0.50
+transfer_model: mobilenet_v2
+paths:
+  data_raw: data/raw
+  data_external: data/external
+  data_processed: data/processed
+  data_splits: data/splits
+  manifest: outputs/tables/dataset_manifest.csv
+  figures: outputs/figures
+  tables: outputs/tables
+  models: outputs/models
+  reports: outputs/reports
+  predictions: outputs/predictions
+  logs: outputs/logs
