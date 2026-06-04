@@ -47,33 +47,33 @@ def predict_pil(model: torch.nn.Module, image: Image.Image, image_size: int) -> 
 def main() -> None:
     """Run Streamlit app."""
     ensure_project_dirs()
-    st.set_page_config(page_title="Döküm Hatası Tahmin Sistemi", layout="centered")
-    st.title("Yapay Zekâ ile Döküm Hatası Tahmin Sistemi")
-    st.warning("Bu sistem ders projesi/prototiptir; gerçek kalite kontrol kararının yerine geçmez.")
+    st.set_page_config(page_title="Casting Defect Prediction System", layout="centered")
+    st.title("AI-Powered Casting Defect Detection System")
+    st.warning("This system is a prototype/course project and does not replace professional quality control decisions.")
 
     config = load_config()
     model_path = MODELS_DIR / "best_model.pt"
     if not model_path.exists():
-        st.error("Model bulunamadı. Önce `python -m src.evaluate` veya `.\run_all.ps1` çalıştırılmalı.")
+        st.error("Model file not found. Please run the training pipeline first (e.g., `python -m src.evaluate` or `.\\run_all.ps1`).")
         return
 
     threshold = st.slider("Defect probability threshold", min_value=0.05, max_value=0.95, value=float(config.get("threshold", 0.5)), step=0.05)
-    uploaded = st.file_uploader("Döküm parçası görseli yükle", type=["jpg", "jpeg", "png", "bmp", "tif", "tiff", "webp"])
+    uploaded = st.file_uploader("Upload a casting part image", type=["jpg", "jpeg", "png", "bmp", "tif", "tiff", "webp"])
     if uploaded is None:
         return
 
     image = Image.open(uploaded).convert("RGB")
-    st.image(image, caption="Yüklenen görüntü", use_container_width=True)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
     model, checkpoint = load_model(str(model_path))
     ok_prob, defect_prob = predict_pil(model, image, int(config["image_size"]))
     predicted_class = "def_front" if defect_prob >= threshold else "ok_front"
-    st.metric("Tahmin", predicted_class)
+    st.metric("Prediction", "DEFECTIVE (def_front)" if predicted_class == "def_front" else "NORMAL (ok_front)")
     st.progress(min(max(defect_prob, 0.0), 1.0), text=f"Defect probability: {defect_prob:.3f}")
     st.write(f"OK probability: `{ok_prob:.3f}`")
     if predicted_class == "def_front":
-        st.info("Parça hatalı olabilir, yeniden kontrol önerilir.")
+        st.error("Warning: The casting part is likely defective. Secondary manual inspection is recommended.")
     else:
-        st.info("Parça görsel olarak sağlam sınıfa daha yakın görünüyor.")
+        st.success("Pass: The casting part appears visually normal.")
 
     gradcam_model = model
     gradcam_path = model_path
@@ -90,11 +90,11 @@ def main() -> None:
             tensor = transform(image).unsqueeze(0)
             cam, _target, _prob_defect = cam_runner(tensor, target_class=None)
             overlay = overlay_cam(str(temp_path), cam, int(config["image_size"]))
-            st.image(overlay, caption=f"Grad-CAM heatmap ({gradcam_path.name})", use_container_width=True)
+            st.image(overlay, caption=f"Grad-CAM Heatmap ({gradcam_path.name})", use_container_width=True)
         finally:
             cam_runner.close()
     else:
-        st.caption("Seçili model Grad-CAM için uygun bir transfer mimarisi değil.")
+        st.caption("The selected model structure does not support Grad-CAM visualization.")
 
 
 if __name__ == "__main__":

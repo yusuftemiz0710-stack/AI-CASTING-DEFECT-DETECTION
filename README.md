@@ -1,46 +1,46 @@
-# Yapay Zekâ ile Döküm Hatası Tahmin Sistemi
+# AI-Powered Casting Defect Prediction System
 
-MAK 353 İmal Usulleri dönem projesi için döküm ürünlerinin yüzey görüntüsünden hatalı/sağlam tahmini yapan teslim edilebilir prototip.
+This project is a deliverable prototype for predicting casting defects from surface images, designed as a term project for the MAK 353 Manufacturing Methods course.
 
-## Klasör Yapısı
+## Folder Structure
 
-- `configs/`: deney ayarları
-- `data/`: ham veri, harici veri, split dosyaları ve veri notları
-- `src/`: indirme, hazırlama, eğitim, değerlendirme, tahmin ve demo kodları
-- `tests/`: pytest kontrolleri
-- `outputs/`: modeller, tablolar, grafikler, tahminler, loglar ve rapor çıktıları
-- `docs/`: ana rapor, kısa özet, sunum notu ve kaynakça
+- `configs/`: Experiment configuration files
+- `data/`: Raw data, external data, data splits, and dataset manifests
+- `src/`: Data downloading, preprocessing, training, evaluation, inference, and web demo scripts
+- `tests/`: Pytest test suite for validating pipeline integrity
+- `outputs/`: Trained models, tables, figures, predictions, log files, and summaries
+- `docs/`: Core project reports, summaries, presentations, and bibliographies
 
-## Kurulum
+## Installation
 
 ```powershell
 cd "C:\Users\ysfis\Desktop\MAK 353\proje"
 .\run_all.ps1
 ```
 
-Sanal ortam elle etkinleştirilecekse:
+If you want to manually activate the virtual environment and install requirements:
 
 ```powershell
 .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Veri İndirme
+## Downloading the Dataset
 
-Otomatik:
+Automatic download:
 
 ```powershell
 python -m src.download_data
 ```
 
-Kaggle kimliği/ağ sorunu yaşanırsa veri setini Kaggle sayfasından indirip `data/raw` veya `data/external` altına çıkarın:
+If you encounter network or API key issues with Kaggle, you can download the dataset manually from the Kaggle dataset page and unzip it under `data/raw` or `data/external`:
 
 ```powershell
 kaggle datasets download -d ravirajsinh45/real-life-industrial-dataset-of-casting-product -p data/raw --unzip
 python -m src.prepare_dataset
 ```
 
-## Eğitim
+## Training
 
 ```powershell
 python -m src.train_baseline_ml
@@ -48,34 +48,34 @@ python -m src.train_cnn
 python -m src.train_transfer
 ```
 
-## Değerlendirme
+## Evaluation
 
 ```powershell
 python -m src.evaluate
 python -m src.explain_gradcam
 ```
 
-## Demo
+## Interactive Web Demo
 
 ```powershell
 streamlit run src/app_streamlit.py
 ```
 
-## Tek Görüntü Tahmini
+## Single Image Inference
 
 ```powershell
 python -m src.predict --image "path\to\image.jpg" --model outputs\models\best_model.pt
 ```
 
-## Testler
+## Run Tests
 
 ```powershell
 pytest tests
 ```
 
-Test çıktısı `outputs/logs/test_results.txt` dosyasına kaydedilir.
+Test results are logged to `outputs/logs/test_results.txt`.
 
-## Üretilen Kritik Çıktılar
+## Critical Generated Outputs
 
 - `outputs/models/best_model.pt`
 - `outputs/models/baseline_ml.joblib`
@@ -89,12 +89,12 @@ Test çıktısı `outputs/logs/test_results.txt` dosyasına kaydedilir.
 - `outputs/predictions/test_predictions.csv`
 - `docs/rapor.md`
 
-## Bilinen Sınırlılıklar
+## Known Limitations
 
-Normalde ders kapsamında gerçek alüminyum enjeksiyon döküm parçalarının fotoğraflarıyla yapılabilecek bu çalışma, zaman ve erişim kısıtı nedeniyle açık veri seti kullanılarak prototip seviyesinde gerçekleştirilmiştir.
+This system is a prototype developed using an open casting defect dataset. It was built under time and equipment constraints instead of photographing real high-pressure die-cast parts in physical laboratories.
 
-Veri seti tek tip parça ve kontrollü ışık koşullarına sahip olabilir. Gerçek alüminyum enjeksiyon döküm parçalarında kullanılmadan önce yeni fotoğraflarla yeniden eğitim/validasyon yapılmalıdır.
+Since the open dataset consists of casting parts with a single geometry and controlled lighting conditions, the models may overfit to this specific geometry. To deploy this system in a real industrial casting line, the models should be retrained and validated using actual casting parts and varied camera environments.
 
-## Teslim Kontrol Listesi
+## Final Submission Checklist
 
-Final kontrol listesi: `outputs/reports/final_checklist.md`
+The final project checklist can be found at `outputs/reports/final_checklist.md`.
